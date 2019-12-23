@@ -7,7 +7,8 @@ Node.js Signal Desktop Database Reader provides a CLI to read/export messages fr
 * Install NPM packages `npm install` or `yarn install`.
 
 ## Runtime
-Start with `./main --help`. Provide the path to your Signal database `./main db tables -c ~/.config/Signal`.
+* Start with `./main --help`. 
+* Provide the path to your Signal database. Example: `./main db tables -c ~/.config/Signal`.
 
 ## Functions/Features
 The project currently performs the following functions:
