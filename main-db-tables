@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+
+const program = require("commander");
+const DB = require("./db");
+
+program
+    .version("0.0.1")
+    .option("-c, --config <file>", "Path to Signal directory", "./Signal")
+    .option("-j, --json", "Display as JSON")
+    .parse(process.argv);
+
+const db = new DB(program.config);
+db.tables()
+.then( tables => {
+    if (program.json) {
+        console.log(JSON.stringify(tables, null, 4));
+    } else {
+        let table;
+        for (table of tables) {
+            console.log(table.name);
+        }
+    }
+    db.close();
+})
+.catch (e => {
+    console.error(e);
+})

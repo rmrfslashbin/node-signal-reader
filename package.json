@@ -1,0 +1,10 @@
+{
+  "name": "node-signal-reader",
+  "version": "1.0.0",
+  "main": "main",
+  "license": "MIT",
+  "dependencies": {
+    "@journeyapps/sqlcipher": "^4.0.0",
+    "commander": "^4.0.1"
+  }
+}

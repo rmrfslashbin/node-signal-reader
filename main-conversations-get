@@ -1,0 +1,84 @@
+#!/usr/bin/env node
+
+const program = require("commander");
+const DB = require("./db");
+
+program
+    .version("0.0.1")
+    .option("-c, --config <file>", "Path to Signal directory", "./Signal")
+    .requiredOption("-i, --id <conversationId>", "Conversation ID")
+    .option("-j, --json", "Display as JSON")
+    .option("-f, --friendly", "Display in friendly format")
+    .parse(process.argv);
+
+const db = new DB(program.config);
+db.messagesFromConversation(program.id)
+.then( messages => {
+    if (program.json) {
+        console.log(JSON.stringify(messages, null, 4));
+    } else {
+        let message;
+        for (message of messages) {
+            let json = JSON.parse(message.json);
+            json.sent_at = new Date(json.sent_at).toLocaleString();
+            json.received_at = new Date(json.received_at).toLocaleString();
+            json.active_at = new Date(json.active_at).toLocaleString();
+            json.decrypted_at = new Date(json.decrypted_at).toLocaleString();
+            json.timestamp = new Date(json.timestamp).toLocaleString();
+            json.name = message.name;
+            json.profileName = message.profileName;
+            json.type = message.type;
+
+            if (program.friendly) {
+                let remote = "Unknown";
+                let direction = "Me";
+
+                if (message.name) {
+                    remote = message.name;
+                } else if (message.profileName) {
+                    remote = message.profileName;
+                }
+                
+                if (message.type == "incoming") {
+                    direction = remote;
+                }
+                console.log(message.id);
+                console.log(`${direction} :: ${json.sent_at}`);
+                if (message.body) {
+                    console.log(message.body);
+                }
+
+                if ( (message.type != "incoming") & (message.type != "outgoing")) {
+                    console.log("  MESSAGE TYPE", message.type);
+                }
+
+                if (json.sticker) {
+                    console.log("  STICKER");
+                    console.log(`  ${json.sticker.data.emoji}`);
+                    console.log(`  ${db.config.attachements}/${json.sticker.data.path}`);
+                }
+
+                if (json.attachments.length > 0) {
+                    let attach;
+                    for (attach of json.attachments) {
+                        console.log("  ATTACHMENT");
+                        console.log(`  Content Type: ${attach.contentType}`);
+                        console.log(`  Filename    : ${attach.fileName}`);
+                        console.log(`  Caption     : ${attach.caption}`);
+                        console.log(`  Path        : ${db.config.attachements}/${attach.path}`)
+                        console.log()
+                    }
+                }
+                console.log();
+                
+
+            } else {
+                console.log(json);
+            }
+        }
+    }
+    db.close();
+})
+.catch (e => {
+    console.error(e);
+})

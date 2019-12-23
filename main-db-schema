@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+
+const program = require("commander");
+const DB = require("./db");
+
+program
+    .version("0.0.1")
+    .option("-c, --config <file>", "Path to Signal directory", "./Signal")
+    .requiredOption("-s --schema <schema>", "Schema name")
+    .parse(process.argv);
+
+const db = new DB(program.config);
+db.schema(program.schema)
+.then( row => {
+    console.log(row.sql);
+    db.close();
+})
+.catch (e => {
+    console.error(e);
+})

@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+const program = require("commander");
+const DB = require("./db");
+
+program
+    .version("0.0.1")
+    .option("-c, --config <file>", "Path to Signal directory", "./Signal")
+    .requiredOption("-i, --id <messgeId>", "Message ID")
+    .option("-j, --json", "Display as JSON")
+    .parse(process.argv);
+
+const db = new DB(program.config);
+db.message(program.id)
+.then( message => {
+    if (program.json) {
+        console.log(JSON.stringify(message, null, 4));
+    } else {
+        console.log(JSON.parse(message.json));
+    }
+    db.close();
+})
+.catch (e => {
+    console.error(e);
+})

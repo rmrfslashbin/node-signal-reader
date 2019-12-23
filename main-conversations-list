@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+
+const program = require("commander");
+const DB = require("./db");
+
+program
+    .version("0.0.1")
+    .option("-c, --config <file>", "Path to Signal directory", "./Signal")
+    .option("-j, --json", "Display as JSON")
+    .parse(process.argv);
+
+const db = new DB(program.config);
+db.conversations()
+.then( conversations => {
+    if (program.json) {
+        console.log(JSON.stringify(conversations, null, 4));
+    } else {
+        let conv;
+        for (conv of conversations) {
+            console.log("ID:           ", conv.id);
+            console.log("Type:         ", conv.type);
+            console.log("Members:      ", conv.members);
+            console.log("Name:         ", conv.name);
+            console.log("Profile name: ", conv.profileName);
+            console.log();
+        }
+    }
+    db.close();
+})
+.catch (e => {
+    console.error(e);
+})
