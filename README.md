@@ -10,14 +10,14 @@ Node.js Signal Desktop Database Reader provides a CLI to read/export messages fr
 * Start with `./main --help`. 
 * Provide the path to your Signal database. Example: `./main db tables -c ~/.config/Signal`.
 
-## Functions/Features
-The project currently performs the following functions:
+## Functions
 * List tables in database
 * List database schemas
 * List conversations/contacts
 * Show a full conversation
 * Show full details of a single message
-Features:
+
+## Features
 * Export all data as JSON or friendly/tables
 * Display paths to media
 * Stickers
