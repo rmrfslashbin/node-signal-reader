@@ -19,7 +19,7 @@ Node.js Signal Desktop Database Reader provides a CLI to read/export messages fr
 
 ## Features
 * Export all data as JSON or friendly/tables
-* Display paths to media
+* Display paths to media/attachments
 * Stickers
 * Timestamps are show in local time
 
