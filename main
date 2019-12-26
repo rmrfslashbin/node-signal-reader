@@ -8,5 +8,6 @@ program
     .command("db <cmd>", "Database functions")
     .command("conversations <cmd>", "Conversations functions")
     .command("messages <cmd>", "Messages functions")
+    .command("attach <cmd>", "Attachment functions")
     .parse(process.argv);
 

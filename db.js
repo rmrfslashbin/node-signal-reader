@@ -106,9 +106,14 @@ class DB {
     }
 
 
-    messagesFromConversation(conversationId) {
+    messagesFromConversation(conversationId, onlyWithAttachments = false) {
         return new Promise ( (resolve, reject) => {
-           let sql = `SELECT messages.*, conversations.name, conversations.profileName FROM messages JOIN conversations ON messages.conversationId = conversations.id  WHERE messages.conversationId = '${conversationId}' ORDER BY messages.sent_at`;
+            let sql;
+            if (onlyWithAttachments) {
+            sql = `SELECT messages.*, conversations.name, conversations.profileName FROM messages JOIN conversations ON messages.conversationId = conversations.id  WHERE messages.hasAttachments != 0 AND messages.conversationId = '${conversationId}' ORDER BY messages.sent_at`;
+            } else {
+                sql = `SELECT messages.*, conversations.name, conversations.profileName FROM messages JOIN conversations ON messages.conversationId = conversations.id  WHERE messages.conversationId = '${conversationId}' ORDER BY messages.sent_at`;
+            }
             this.db.all(sql, (err, rows) => {
                 if (err) {
                     reject(err);

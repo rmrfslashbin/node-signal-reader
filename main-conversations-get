@@ -7,12 +7,13 @@ program
     .version("0.0.1")
     .option("-c, --config <file>", "Path to Signal directory", "./Signal")
     .requiredOption("-i, --id <conversationId>", "Conversation ID")
+    .option("-a, --attach", "Only show messages with attachments")
     .option("-j, --json", "Display as JSON")
     .option("-f, --friendly", "Display in friendly format")
     .parse(process.argv);
 
 const db = new DB(program.config);
-db.messagesFromConversation(program.id)
+db.messagesFromConversation(program.id, program.attach)
 .then( messages => {
     if (program.json) {
         console.log(JSON.stringify(messages, null, 4));

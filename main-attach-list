@@ -1,0 +1,65 @@
+#!/usr/bin/env node
+
+const program = require("commander");
+const DB = require("./db");
+const path = require("path");
+
+program
+    .version("0.0.1")
+    .option("-c, --config <file>", "Path to Signal directory", "./Signal")
+    .requiredOption("-i, --id <conversationId>", "Conversation ID")
+    .option("-j, --json", "Display as JSON")
+    .option("-1, --one", "Display results on one line")
+    .parse(process.argv);
+
+const db = new DB(program.config);
+db.messagesFromConversation(program.id, true)
+.then( messages => {
+    let message;
+    for (message of messages) {
+        let json = JSON.parse(message.json);
+        let attach;
+        let fileName;
+        let filepath;
+        let jsonOutput = [];
+        for (attach of json.attachments) {
+            fileName = attach.fileName;
+            if (! fileName) {
+                fileType = attach.contentType.split("/")[1];
+                fileName = `${attach.id}.${fileType}`;
+            } else {
+                fileName = `${attach.id}-${fileName}`;
+            }
+            filepath = path.normalize(`${db.config.attachements}/${attach.path}`);
+            if (program.json) {
+                jsonOutput.push({
+                    messageID: message.id,
+                    sentAt: message.sent_at,
+                    mediaID: attach.id,
+                    fileType: attach.contentType,
+                    fileName: fileName,
+                    path: filepath
+                }); 
+            } else {
+                if (program.one) {
+                    console.log(message.id, new Date(message.sent_at), attach.id, attach.contentType, fileName, filepath);
+                } else {
+                    console.log("Message ID :", message.id);
+                    console.log("    Sent at:", new Date(message.sent_at));
+                    console.log("   Media ID:", attach.id);
+                    console.log("  File Type:", attach.contentType);
+                    console.log("  File Name:", fileName);
+                    console.log("  File Path:", filepath);
+                    console.log();
+                }
+            }
+        }
+        if (program.json) {
+            console.log(JSON.stringify(jsonOutput, null, 4));
+        }
+    }
+    db.close();
+})
+.catch (e => {
+    console.error(e);
+})

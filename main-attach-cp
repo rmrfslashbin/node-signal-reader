@@ -1,0 +1,58 @@
+#!/usr/bin/env node
+
+const program = require("commander");
+const DB = require("./db");
+const path = require("path");
+const fs = require("fs");
+
+program
+    .version("0.0.1")
+    .option("-c, --config <file>", "Path to Signal directory", "./Signal")
+    .requiredOption("-i, --id <conversationId>", "Conversation ID")
+    .requiredOption("-t, --target <dir>", "Directory to copy files to")
+    .parse(process.argv);
+
+const db = new DB(program.config);
+const target = path.normalize(program.target);
+
+try {
+    const stat = fs.statSync(target);
+    if (! stat.isDirectory()) {
+        console.log(`${target} is not a directory`);
+        process.exit(1);
+    }
+} catch (e) {
+    console.log(e);
+    process.exit(1);
+}
+
+db.messagesFromConversation(program.id, true)
+.then( messages => {
+    let message;
+    for (message of messages) {
+        let json = JSON.parse(message.json);
+        let attach;
+        let fileName;
+        let sourcePath;
+        let targetPath;
+
+        for (attach of json.attachments) {
+            fileName = attach.fileName;
+            if (! fileName) {
+                fileType = attach.contentType.split("/")[1];
+                fileName = `${attach.id}.${fileType}`;
+            } else {
+                fileName = `${attach.id}-${fileName}`;
+            }
+            sourcePath = path.normalize(`${db.config.attachements}/${attach.path}`);
+            targetPath = path.normalize(`${target}/${fileName}`);
+            fs.copyFileSync(sourcePath, targetPath);
+            //console.log(sourcePath, "==>", targetPath);
+            console.log(targetPath);
+        }
+    }
+    db.close();
+})
+.catch (e => {
+    console.error(e);
+})
