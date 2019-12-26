@@ -16,6 +16,8 @@ Node.js Signal Desktop Database Reader provides a CLI to read/export messages fr
 * List conversations/contacts
 * Show a full conversation
 * Show full details of a single message
+* List attachments per conversation
+* Copy attachments from a coversation to a target directory
 
 ## Features
 * Export all data as JSON or friendly/tables
