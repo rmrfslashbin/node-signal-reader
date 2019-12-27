@@ -7,6 +7,7 @@ program
     .version("0.0.1")
     .option("-c, --config <file>", "Path to Signal directory", "./Signal")
     .option("-j, --json", "Display as JSON")
+    .option("-1, --one", "Display one-line format")
     .parse(process.argv);
 
 const db = new DB(program.config);
@@ -16,13 +17,20 @@ db.conversations()
         console.log(JSON.stringify(conversations, null, 4));
     } else {
         let conv;
+        if (program.one) {
+            console.log("id, type, members, name, profileName");
+        }
         for (conv of conversations) {
-            console.log("ID:           ", conv.id);
-            console.log("Type:         ", conv.type);
-            console.log("Members:      ", conv.members);
-            console.log("Name:         ", conv.name);
-            console.log("Profile name: ", conv.profileName);
-            console.log();
+            if (program.one) {
+                console.log(`${conv.id}, ${conv.type}, ${conv.members}, ${conv.name}, ${conv.profileName}`);
+            } else {
+                console.log("ID:           ", conv.id);
+                console.log("Type:         ", conv.type);
+                console.log("Members:      ", conv.members);
+                console.log("Name:         ", conv.name);
+                console.log("Profile name: ", conv.profileName);
+                console.log();
+            }
         }
     }
     db.close();

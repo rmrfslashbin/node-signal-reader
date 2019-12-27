@@ -2,6 +2,34 @@ const path = require("path");
 const sqlite3 = require("@journeyapps/sqlcipher").verbose();
 const fs = require("fs");
 
+function isFile(file) {
+    file = path.normalize(file);
+    try {
+        const stat = fs.statSync(file);
+        if (stat.isFile()) {
+            return file
+        } else {
+            throw new Error (`${file} is not a file`);
+        }
+    } catch (e) {
+        throw e
+    }
+}
+
+function isDir(dir) {
+    file = path.normalize(dir);
+    try {
+        const stat = fs.statSync(dir);
+        if (stat.isDirectory()) {
+            return file
+        } else {
+            throw new Error (`${dir} is not a directory`);
+        }
+    } catch (e) {
+        throw e
+    }
+}
+
 
 class DB {
     constructor(rootdir) {
@@ -26,9 +54,9 @@ class DB {
 
 
     loadConfig(rootPath) {
-        const dbFile = path.resolve(rootPath, "sql/db.sqlite");
-        const configFile = path.resolve(rootPath, "config.json");
-        const attachments = path.resolve(rootPath, "attachments.noindex");
+        const dbFile = isFile(path.resolve(rootPath, "sql/db.sqlite"));
+        const configFile = isFile(path.resolve(rootPath, "config.json"));
+        const attachments = isDir(path.resolve(rootPath, "attachments.noindex"));
 
         try {
             let res;
