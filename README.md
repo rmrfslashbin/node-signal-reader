@@ -4,6 +4,7 @@ Node.js Signal Desktop Database Reader provides a CLI to read/export messages fr
 ## Setup
 * Find the location of your Signal sqlite database. On *nix systems, the locations is usually `$HOME/.config/Signal/`.
 * Clone this repo to your local system.
+* Install libssl-dev. On Ubuntu systems: `sudo apt install libssl-dev`.
 * Install NPM packages `npm install` or `yarn install`.
 
 ## Runtime
@@ -24,6 +25,11 @@ Node.js Signal Desktop Database Reader provides a CLI to read/export messages fr
 * Display paths to media/attachments
 * Stickers
 * Timestamps are show in local time
+* Colorize conversations in friendly mode (`./main conversations get --id xxx --friendly --color`)
+
+## Missing Features
+* Group support is not well tested.
+* Support to attachments in conversation view could be better.
 
 ## Comments/Feedback
 Comments, bug reports, and feedback are appreciated. This code was tested on my personal Signal database. YMMV.
