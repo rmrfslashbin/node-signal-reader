@@ -2,6 +2,7 @@
 
 const program = require("commander");
 const DB = require("./db");
+const chalk = require('chalk');
 
 program
     .version("0.0.1")
@@ -10,6 +11,7 @@ program
     .option("-a, --attach", "Only show messages with attachments")
     .option("-j, --json", "Display as JSON")
     .option("-f, --friendly", "Display in friendly format")
+    .option("-o, --color", "Colorize friendly output")
     .parse(process.argv);
 
 const db = new DB(program.config);
@@ -31,42 +33,47 @@ db.messagesFromConversation(program.id, program.attach)
             json.type = message.type;
 
             if (program.friendly) {
-                let remote = "Unknown";
-                let direction = "Me";
+                let canonicalName = "Me";
+                let colorize = (txt) => { return txt };
 
-                if (message.name) {
-                    remote = message.name;
-                } else if (message.profileName) {
-                    remote = message.profileName;
-                }
-                
                 if (message.type == "incoming") {
-                    direction = remote;
+                    if (program.color) {
+                        colorize = chalk.green;
+                    }
+                    if (message.name) {
+                        canonicalName = message.name;
+                    } else if (message.profileName) {
+                        canonicalName = message.profileName;
+                    }
+                } else {
+                    if (program.color) {
+                        colorize = chalk.cyan;
+                    }
                 }
-                console.log(message.id);
-                console.log(`${direction} :: ${json.sent_at}`);
+                console.log(colorize(message.id));
+                console.log(colorize(`${canonicalName} :: ${json.sent_at}`));
                 if (message.body) {
-                    console.log(message.body);
+                    console.log(colorize(message.body));
                 }
 
                 if ( (message.type != "incoming") & (message.type != "outgoing")) {
-                    console.log("  MESSAGE TYPE", message.type);
+                    console.log(colorize(`  MESSAGE TYPE ${ message.type }`));
                 }
 
                 if (json.sticker) {
-                    console.log("  STICKER");
-                    console.log(`  ${json.sticker.data.emoji}`);
-                    console.log(`  ${db.config.attachements}/${json.sticker.data.path}`);
+                    console.log(colorize("  STICKER"));
+                    console.log(colorize(`  ${json.sticker.data.emoji}`));
+                    console.log(colorize(`  ${db.config.attachements}/${json.sticker.data.path}`));
                 }
 
                 if (json.attachments.length > 0) {
                     let attach;
                     for (attach of json.attachments) {
-                        console.log("  ATTACHMENT");
-                        console.log(`  Content Type: ${attach.contentType}`);
-                        console.log(`  Filename    : ${attach.fileName}`);
-                        console.log(`  Caption     : ${attach.caption}`);
-                        console.log(`  Path        : ${db.config.attachements}/${attach.path}`)
+                        console.log(colorize("  ATTACHMENT"));
+                        console.log(colorize(`  Content Type: ${attach.contentType}`));
+                        console.log(colorize(`  Filename    : ${attach.fileName}`));
+                        console.log(colorize(`  Caption     : ${attach.caption}`));
+                        console.log(colorize(`  Path        : ${db.config.attachements}/${attach.path}`));
                         console.log()
                     }
                 }
